@@ -3,7 +3,6 @@ Fabrice Lacout
 ID: 5652857
 project2 calculator/ functions definition
 
-The solution for dealing with integer overflow was found on stack-overflow
 **************************************************************************/
 
 
@@ -17,59 +16,64 @@ BigInt::BigInt(const std::string& s){
 					} );
 }
 
-BigInt BigInt::operator +(BigInt& second){
-	std::vector<int> left = this->number;
-	std::vector<int> right = second.number;
+BigInt operator +(BigInt& first, BigInt& second){
+	std::vector<int> left = first.get_number();
+	std::vector<int> right = second.get_number();
 	if (left.size() > right.size()) right.resize(left.size());
 	else left.resize(right.size());
 
 	return addVector(left, right);
 }
 
-BigInt BigInt::addVector (std::vector<int>& left, std::vector<int>& right){
-	BigInt result;
-	result.number.resize(left.size());
+BigInt addVector (std::vector<int>& left, std::vector<int>& right){
+	BigInt res;
+    std::vector<int> result;
+	result.resize(left.size());
 	int carry=0, localResult=0;
 
 	for (int i=0; i<(int)left.size(); i++){
 		localResult = left[i] + right[i] + carry;
 		if (localResult > 9) { 
-			result.number[i] = localResult % 10;
+			result[i] = localResult % 10;
 			carry = 1;
 		}
 		else {
-			result.number[i] = localResult;
+			result[i] = localResult;
 			carry = 0;
 		}
 	}
-	if (carry==1) result.number.push_back(1);
-	return result;
+	if (carry==1) result.push_back(1);
+    res.set_number(result);
+	return res;
 }
 
-BigInt BigInt::operator *(BigInt& second){
-	BigInt result, temp;
-	result.number = {0};
+BigInt operator *(BigInt& first, BigInt& second){
+	BigInt result("0");
 
-	for (int i=0; i < (int)second.number.size(); i++){
-		int digit = second.number[i];
-		temp.number = {0};
-		// multiply left by right single digit
-		for (; digit>0; digit--) temp = temp + *this;
-		// adjust multiple of tens
-		for (int inserts=i; inserts>0; inserts--) temp.number.insert(temp.number.begin(), 0);
+	for (int i=0; i < (int)second.get_number().size(); i++){
+		int digit = second.get_number()[i];
+		BigInt temp("0");
+		// multiply left by a single digit of right
+		for (; digit>0; digit--) temp = temp + first;
+		// adjust multiple of tens relative to the position of digit.
+        std::vector<int>  tenths = temp.get_number();
+		for (int inserts=i; inserts>0; inserts--) {
+            tenths.insert(tenths.begin(),0); 
+        }
+        temp.set_number(tenths);
 		result = result + temp;
 	}
 	
 	return result;
 }
 
-BigInt BigInt::operator ^(BigInt& lhs){
-	int exponent = lhs.to_int();
+BigInt operator ^(BigInt& first, BigInt& expo){
+	int exponent = expo.to_int();
 	BigInt result;
-	result.number = this->number;
-	if (exponent == 0) result.number = {1};
+	result.set_number(first.get_number());
+	if (exponent == 0) result.set_number({1});
 	else {
-		for(; exponent>1; exponent--) result = result * *this;
+		for(; exponent>1; exponent--) result = result * first;
 	}
 	return result;
 }
@@ -83,11 +87,6 @@ int BigInt::to_int(){
 	return result;
 }
 	
-/*
-std::ostream& operator<< (std::ostream& os, const BigInt& bigInt) {
-	for (int i=((int)bigInt.number.size()-1); i>=0; i--) os << bigInt.number[i];
-	return os;
-}*/
 
 std::ostream& operator<< (std::ostream& os, const BigInt& bigInt) {
 	std::vector<int> v = bigInt.get_number();

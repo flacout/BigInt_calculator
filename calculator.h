@@ -22,20 +22,22 @@ class BigInt{
 		std::vector<int> number;
 
 	public:
-		BigInt(){};
+		BigInt(): number{0} {}
 		BigInt(const std::string& s);
 
-		BigInt operator +(BigInt& second);
-		BigInt operator *(BigInt& second);
-		BigInt operator ^(BigInt& exponent);
-		BigInt addVector (std::vector<int>& left, std::vector<int>& right);
 		int to_int();
 		std::vector<int> get_number() const { return number;}
+        void set_number(std::vector<int> v) { number = v;}
 };
 
 std::ostream& operator<< (std::ostream& os, const BigInt& bigInt);
+BigInt operator +(BigInt& first, BigInt& second);
+BigInt operator *(BigInt& first, BigInt& second);
+BigInt operator ^(BigInt& first, BigInt& exponent);
+BigInt addVector (std::vector<int>& left, std::vector<int>& right);
 
-// Functions for parsing.
+
+// Functions for parsing and the calculator.
 BigInt addition(const std::vector<std::string>& words);
 BigInt multiplication(const std::vector<std::string>& words);
 BigInt exponentiation(const std::vector<std::string>& words);
