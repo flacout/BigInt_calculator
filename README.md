@@ -4,7 +4,7 @@ This is a command line program from a school project. This big Int calculator su
 The operation should be prefix, meaning the operation type comes first and then the operands. The result of a binary operation is used for the next binary operation:
 ```
 + 5 10 20 = 35
-+ * 2 3 10 = 30
+* 2 3 10 = 30
 ```
 
 The program accept an argument:
